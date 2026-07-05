@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LETS CALCULATE MBG!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: '#f87171', 'accent-hover': '#ef4444' }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    html { scroll-behavior: smooth; }
+
+    .source-label {
+      font-family: 'Inter', monospace;
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.02em;
+      line-height: 1.5;
+    }
+
+    .timeline-bar {
+      height: 10px;
+      border-radius: 0;
+      transition: width 1s ease-out;
+    }
+
+    .stat-card {
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 16px 20px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .citation-box {
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 10px 12px;
+      font-size: 10px;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section-visible { animation: fadeInUp 0.5s ease-out; }
+
+    .pulse-soft {
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.5; }
+    }
+
+    .section-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================== -->
+<!-- HERO — fixed fullscreen        -->
+<!-- ============================== -->
+<div id="hero" class="fixed inset-0 z-10 flex flex-col bg-[#0a0a0a]">
+
+  <script src="navbar.js"></script>
+
+  <div class="flex-1 flex flex-col justify-center px-6 sm:px-8 max-w-[920px] mx-auto w-full pt-16">
+
+    <div class="mb-3">
+      <span class="text-[11px] font-bold tracking-[0.08em] uppercase text-white/30">Anggaran terpakai sejak halaman dibuka</span>
+    </div>
+
+    <div id="liveCounter" class="tabular font-black text-white leading-none tracking-[-0.03em] break-words" style="font-size:clamp(2.8rem,11vw,6.5rem)">Rp&nbsp;0</div>
+
+    <div class="mt-7 pt-7 border-t border-white/[0.08]">
+      <p class="text-sm sm:text-base font-semibold text-white/70 leading-relaxed">
+        Dalam durasi sesi ini, <span id="rkbCount" class="tabular text-white font-extrabold">0</span> unit ruang kelas baru telah habis dialokasikan.
+      </p>
+      <div class="source-label mt-1">Asumsi 1 RKB = Rp 150.000.000 (standar Kemendikbud)</div>
+    </div>
+
+    <div class="flex flex-wrap gap-x-10 gap-y-4 mt-5">
+      <div>
+        <div class="text-xl sm:text-2xl font-extrabold text-white tabular">Rp&nbsp;9.895.833</div>
+        <div class="text-[10px] font-bold tracking-wide uppercase text-white/25 mt-0.5">Laju per detik</div>
+      </div>
+      <div>
+        <div id="elapsedTime" class="text-xl sm:text-2xl font-extrabold text-white tabular">0:00</div>
+        <div class="text-[10px] font-bold tracking-wide uppercase text-white/25 mt-0.5">Durasi sesi</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="w-full h-[5px] bg-white/[0.06]">
+    <div id="burnFill" class="h-full w-0" style="background:#fff"></div>
+  </div>
+
+  <div class="px-6 sm:px-8 py-4 max-w-[920px] mx-auto w-full">
+    <div class="flex items-end justify-between gap-4">
+      <div class="source-label max-w-[520px]">
+        Data berbasis realisasi anggaran harian program MBG per Januari 2026 (Rp 855 M/hari, sumber: Badan Gizi Nasional/BGN). Angka anggaran bersifat dinamis dan telah direvisi beberapa kali sepanjang 2026.
+      </div>
+      <div class="text-[10px] font-bold tracking-widest uppercase text-white/20 hidden sm:block pulse-soft shrink-0">
+        Scroll &darr;
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="h-screen"></div>
+
+<!-- ============================== -->
+<!-- DATA SECTION — scrollable      -->
+<!-- ============================== -->
+<div class="relative z-20 bg-[#0a0a0a] border-t border-white/[0.06]">
+
+  <!-- ====== Section A ====== -->
+  <section id="section-a" class="max-w-[920px] mx-auto px-6 sm:px-8 py-16 sm:py-20">
+    <h2 class="text-accent text-sm font-extrabold tracking-[0.12em] uppercase mb-10">A &mdash; Anatomi Anggaran</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+      <div class="stat-card">
+        <div class="text-[10px] font-bold tracking-wider uppercase text-white/30 mb-1">Pagu Awal 2026</div>
+        <div class="text-3xl sm:text-4xl font-black text-white tabular"><span class="count-up" data-value="335" data-prefix="Rp " data-suffix=" T" data-decimals="0">0</span></div>
+        <div class="source-label mt-1">UU APBN 2026, pagu awal program MBG</div>
+      </div>
+      <div class="stat-card border-accent/20">
+        <div class="text-[10px] font-bold tracking-wider uppercase text-white/30 mb-1">Revisi Pagu (BGN)</div>
+        <div class="text-3xl sm:text-4xl font-black text-accent tabular"><span class="count-up" data-value="268" data-prefix="Rp " data-suffix=" T" data-decimals="0">0</span></div>
+        <div class="source-label mt-1">Revisi oleh BGN, pagu 2026 turun Rp 67 T dari pagu awal</div>
+      </div>
+    </div>
+
+    <div class="mb-10">
+      <div class="text-[11px] font-extrabold tracking-wider uppercase text-white/40 mb-4">Breakdown Alokasi</div>
+      <div class="space-y-3">
+        <div class="flex items-center gap-4">
+          <div class="w-2 h-2 bg-accent shrink-0"></div>
+          <div class="flex-1">
+            <div class="text-sm font-bold text-white">Gizi &amp; Makanan</div>
+            <div class="text-lg font-extrabold text-white tabular"><span class="count-up" data-value="255.5" data-prefix="Rp " data-suffix=" T" data-decimals="1">0</span></div>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="w-2 h-2 bg-white/30 shrink-0"></div>
+          <div class="flex-1">
+            <div class="text-sm font-bold text-white">Dukungan Manajemen</div>
+            <div class="text-lg font-extrabold text-white tabular"><span class="count-up" data-value="12.4" data-prefix="Rp " data-suffix=" T" data-decimals="1">0</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="source-label mt-2">Dokumen Anggaran BGN 2026</div>
+    </div>
+
+    <div>
+      <div class="text-[11px] font-extrabold tracking-wider uppercase text-white/40 mb-4">Realisasi per Periode</div>
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span class="text-white/70">16 Jan 2026</span>
+            <span class="tabular text-white">Rp 17,4 T</span>
+          </div>
+          <div class="w-full bg-white/[0.06] h-[10px]">
+            <div class="timeline-bar bg-white/60 h-full" data-pct="5.2" style="width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span class="text-white/70">9 Mar 2026</span>
+            <span class="tabular text-white">Rp 44,0 T (13,1% dari pagu)</span>
+          </div>
+          <div class="w-full bg-white/[0.06] h-[10px]">
+            <div class="timeline-bar bg-white/80 h-full" data-pct="13.1" style="width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span class="text-white/70">30 Apr 2026</span>
+            <span class="tabular text-accent">Rp 75 T (22,4% dari pagu Rp 335 T)</span>
+          </div>
+          <div class="w-full bg-white/[0.06] h-[10px]">
+            <div class="timeline-bar bg-accent h-full" data-pct="22.4" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="source-label mt-2">Laporan realisasi anggaran BGN, dihimpun dari berbagai sumber</div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-[920px] mx-auto"></div>
+
+  <!-- ====== Section B ====== -->
+  <section id="section-b" class="max-w-[920px] mx-auto px-6 sm:px-8 py-16 sm:py-20">
+    <h2 class="text-accent text-sm font-extrabold tracking-[0.12em] uppercase mb-3">B &mdash; Kalau Bukan Buat Makan, Dipakai Buat Apa?</h2>
+    <p class="text-xs text-white/40 mb-8 leading-relaxed">Temuan Project Multatuli dari data LKPP, belanja BGN 2025, total Rp 6,2 triliun dalam 1.089 paket pengadaan.</p>
+
+    <div class="space-y-5 mb-10">
+      <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <div>
+          <div class="text-sm font-bold text-white">Sepeda Motor Listrik</div>
+          <div class="source-label">Termasuk biaya pengiriman</div>
+        </div>
+        <div class="text-xl font-black text-white tabular"><span class="count-up" data-value="1.2" data-prefix="Rp " data-suffix=" T" data-decimals="1">0</span></div>
+      </div>
+      <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <div>
+          <div class="text-sm font-bold text-white">Tablet</div>
+          <div class="source-label">&nbsp;</div>
+        </div>
+        <div class="text-xl font-black text-white tabular"><span class="count-up" data-value="508.4" data-prefix="Rp " data-suffix=" M" data-decimals="1">0</span></div>
+      </div>
+      <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <div>
+          <div class="text-sm font-bold text-white">Pakaian/Seragam (PDH, PDL, dll)</div>
+          <div class="source-label">&nbsp;</div>
+        </div>
+        <div class="text-xl font-black text-white tabular"><span class="count-up" data-value="622.3" data-prefix="Rp " data-suffix=" M" data-decimals="1">0</span></div>
+      </div>
+      <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+        <div>
+          <div class="text-sm font-bold text-white">Kaos Kaki</div>
+          <div class="source-label">&nbsp;</div>
+        </div>
+        <div class="text-xl font-black text-white tabular"><span class="count-up" data-value="6.9" data-prefix="Rp " data-suffix=" M" data-decimals="1">0</span></div>
+      </div>
+    </div>
+
+    <div class="border border-accent/30 bg-accent/[0.04] p-5">
+      <div class="flex items-start gap-3">
+        <span class="text-accent text-lg leading-none mt-0.5">&#9650;</span>
+        <div>
+          <div class="text-sm font-extrabold text-accent uppercase tracking-wider">Pos Kendaraan — Belanja Terbesar BGN</div>
+          <div class="text-2xl font-black text-white tabular mt-1"><span class="count-up" data-value="1.39" data-prefix="Rp " data-suffix=" T" data-decimals="2">0</span></div>
+          <p class="text-xs text-white/50 mt-1 leading-relaxed">Pos kendaraan (termasuk sepeda motor listrik) justru menjadi pos belanja <em>terbesar</em> BGN tahun pertama &mdash; bukan bahan makanan.</p>
+          <div class="source-label mt-1">Project Multatuli, analisis data LKPP atas belanja BGN 2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-[920px] mx-auto"></div>
+
+  <!-- ====== Section C ====== -->
+  <section id="section-c" class="max-w-[920px] mx-auto px-6 sm:px-8 py-16 sm:py-20">
+    <h2 class="text-accent text-sm font-extrabold tracking-[0.12em] uppercase mb-10">C &mdash; Krisis Keamanan Pangan</h2>
+
+    <div class="mb-10">
+      <div class="text-xs font-extrabold tracking-wider uppercase text-white/40 mb-4">Korban Keracunan MBG (Rentang Angka Multi-Sumber)</div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="stat-card">
+          <div class="text-lg font-black text-white tabular">170&ndash;400+</div>
+          <div class="text-xs font-bold text-white/50 mt-1">JPPI (Jaringan Pemantau Pendidikan Indonesia)</div>
+          <div class="source-label mt-1">Periode Jan&ndash;Apr 2026, mencatat laporan dari 15 provinsi</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-lg font-black text-white tabular">90&ndash;250+</div>
+          <div class="text-xs font-bold text-white/50 mt-1">FSGI (Federasi Serikat Guru Indonesia)</div>
+          <div class="source-label mt-1">Periode Feb&ndash;Mei 2026, data dari anggota dan sekolah</div>
+        </div>
+        <div class="stat-card">
+          <div class="text-lg font-black text-white tabular">200&ndash;500+</div>
+          <div class="text-xs font-bold text-white/50 mt-1">Komnas HAM</div>
+          <div class="source-label mt-1">Periode Jan&ndash;Mei 2026, termasuk laporan dari orangtua dan tenaga kesehatan</div>
+        </div>
+      </div>
+      <div class="source-label mt-3">Rentang angka disebabkan perbedaan metodologi, periode pencatatan, dan cakupan wilayah tiap lembaga. Angka tidak boleh dijumlahkan.</div>
+    </div>
+
+    <div class="mb-10">
+      <div class="text-xs font-extrabold tracking-wider uppercase text-white/40 mb-3">Sebaran Wilayah Tertinggi</div>
+      <div class="space-y-2">
+        <div class="flex items-center gap-3 text-sm">
+          <span class="w-2 h-2 bg-accent shrink-0"></span>
+          <span class="font-bold text-white">Jawa Tengah</span>
+          <span class="text-white/40 text-xs">— jumlah laporan tertinggi</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="w-2 h-2 bg-white/40 shrink-0"></span>
+          <span class="font-bold text-white">Jawa Timur</span>
+          <span class="text-white/40 text-xs">— peringkat kedua</span>
+        </div>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="w-2 h-2 bg-white/25 shrink-0"></span>
+          <span class="font-bold text-white">Jawa Barat</span>
+          <span class="text-white/40 text-xs">— peringkat ketiga</span>
+        </div>
+      </div>
+      <div class="source-label mt-2">Laporan gabungan JPPI, FSGI, Komnas HAM (2026)</div>
+    </div>
+
+    <div>
+      <div class="text-xs font-extrabold tracking-wider uppercase text-white/40 mb-3">Sertifikat Laik Higiene Sanitasi (SLHS)</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="stat-card">
+          <div class="text-2xl font-black text-white tabular">27.600+</div>
+          <div class="text-xs font-bold text-white/50 mt-1">Total SPPG Beroperasi</div>
+        </div>
+        <div class="stat-card border-accent/20">
+          <div class="text-2xl font-black text-accent tabular">~15.700</div>
+          <div class="text-xs font-bold text-white/50 mt-1">Memiliki SLHS</div>
+        </div>
+      </div>
+      <div class="source-label mt-2">Data Komnas HAM, temuan lapangan per Mei 2026. Hanya ~57% SPPG yang laik higiene.</div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-[920px] mx-auto"></div>
+
+  <!-- ====== Section D ====== -->
+  <section id="section-d" class="max-w-[920px] mx-auto px-6 sm:px-8 py-16 sm:py-20">
+    <h2 class="text-accent text-sm font-extrabold tracking-[0.12em] uppercase mb-10">D &mdash; Skandal &amp; Penyelidikan</h2>
+
+    <div class="space-y-8">
+      <div class="border-l-2 border-accent pl-4">
+        <div class="text-xs font-extrabold text-accent tracking-wider uppercase">3 Juni 2026</div>
+        <div class="text-sm font-bold text-white mt-1 leading-relaxed">
+          Mantan Kepala BGN Dadan Hindayana serta 2 mantan Wakil Kepala BGN (Sony Sonjaya, Lodewyk Pusung) ditahan Kejaksaan Agung atas dugaan korupsi tata kelola MBG 2025&ndash;2026.
+        </div>
+        <div class="source-label mt-1">Kejaksaan Agung RI, siaran pers 3 Juni 2026. Penahanan dilakukan sehari setelah mereka dicopot Presiden Prabowo.</div>
+      </div>
+
+      <div class="border-l-2 border-white/20 pl-4">
+        <div class="text-xs font-extrabold text-white/50 tracking-wider uppercase">Sebelumnya</div>
+        <div class="text-sm font-bold text-white mt-1 leading-relaxed">
+          ICW telah melaporkan temuan pengadaan mencurigakan ke KPK sebelum skandal ini meledak.
+        </div>
+        <div class="source-label mt-1">Indonesia Corruption Watch (ICW), laporan pengadaan BGN 2025</div>
+      </div>
+
+      <div class="border-l-2 border-white/20 pl-4">
+        <div class="text-xs font-extrabold text-white/50 tracking-wider uppercase">22 Juni &ndash; 13 Juli 2026</div>
+        <div class="text-sm font-bold text-white mt-1 leading-relaxed">
+          Program MBG dihentikan sementara untuk evaluasi tata kelola menyeluruh.
+        </div>
+        <div class="source-label mt-1">Siaran pers Sekretariat Kabinet, 22 Juni 2026</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-[920px] mx-auto"></div>
+
+  <!-- ====== Section E ====== -->
+  <section id="section-e" class="max-w-[920px] mx-auto px-6 sm:px-8 py-16 sm:py-20">
+    <h2 class="text-accent text-sm font-extrabold tracking-[0.12em] uppercase mb-10">E &mdash; Perdebatan Konstitusional</h2>
+
+    <div class="space-y-5">
+      <p class="text-sm text-white/70 leading-relaxed">
+        Anggaran MBG dimasukkan ke pos anggaran pendidikan &mdash; yang merupakan <strong class="text-white font-bold">mandatory spending 20% APBN</strong> &mdash; lewat Penjelasan Pasal 22 ayat (3) UU APBN 2026.
+      </p>
+      <p class="text-sm text-white/70 leading-relaxed">
+        Sejumlah akademisi, guru honorer, dan yayasan pendidikan mengajukan <strong class="text-white font-bold">uji materi ke Mahkamah Konstitusi</strong> dengan dalih penggunaan anggaran pendidikan untuk program makan siang tidak sesuai amanat UUD 1945 Pasal 31.
+      </p>
+      <div class="source-label">Perkara masih berproses di Mahkamah Konstitusi per pertengahan 2026. Beberapa organisasi penggugat: Perhimpunan Guru Indonesia, Lembaga Studi &amp; Advokasi Masyarakat (ELSAM).</div>
+    </div>
+  </section>
+
+  <div class="section-divider max-w-[920px] mx-auto"></div>
+
+  <!-- ====== Section F: Footer Sumber ====== -->
+  <section id="section-f" class="max-w-[920px] mx-auto px-6 sm:px-8 py-16 sm:py-20">
+    <h2 class="text-accent text-sm font-extrabold tracking-[0.12em] uppercase mb-10">F &mdash; Daftar Sumber</h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">1.</span>
+        <span class="text-white/70 font-bold">UU APBN 2026</span>
+        <span class="text-white/30"> — Pagu awal dan final program MBG, pos anggaran pendidikan.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">2.</span>
+        <span class="text-white/70 font-bold">Badan Gizi Nasional (BGN)</span>
+        <span class="text-white/30"> — Realisasi anggaran harian Rp 855 M/hari (Jan 2026), revisi pagu, realisasi per periode.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">3.</span>
+        <span class="text-white/70 font-bold">Project Multatuli</span>
+        <span class="text-white/30"> — Analisis data LKPP, belanja BGN 2025 (Rp 6,2 T / 1.089 paket). <span class="source-label block mt-0.5">multatuli.org</span></span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">4.</span>
+        <span class="text-white/70 font-bold">LKPP (Layanan Pengadaan Secara Elektronik)</span>
+        <span class="text-white/30"> — Data pengadaan BGN 2025.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">5.</span>
+        <span class="text-white/70 font-bold">JPPI (Jaringan Pemantau Pendidikan Indonesia)</span>
+        <span class="text-white/30"> — Data keracunan MBG Jan&ndash;Apr 2026.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">6.</span>
+        <span class="text-white/70 font-bold">FSGI (Federasi Serikat Guru Indonesia)</span>
+        <span class="text-white/30"> — Data keracunan MBG Feb&ndash;Mei 2026.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">7.</span>
+        <span class="text-white/70 font-bold">Komnas HAM</span>
+        <span class="text-white/30"> — Data keracunan, SLHS SPPG, temuan lapangan per Mei 2026.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">8.</span>
+        <span class="text-white/70 font-bold">Kejaksaan Agung RI</span>
+        <span class="text-white/30"> — Penahanan mantan Kepala &amp; Wakil Kepala BGN, 3 Juni 2026.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">9.</span>
+        <span class="text-white/70 font-bold">Indonesia Corruption Watch (ICW)</span>
+        <span class="text-white/30"> — Laporan pengadaan mencurigakan BGN ke KPK.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">10.</span>
+        <span class="text-white/70 font-bold">Sekretariat Kabinet RI</span>
+        <span class="text-white/30"> — Penghentian sementara MBG 22 Jun&ndash;13 Jul 2026.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">11.</span>
+        <span class="text-white/70 font-bold">Mahkamah Konstitusi RI</span>
+        <span class="text-white/30"> — Perkara uji materi Pasal 22 ayat (3) UU APBN 2026, masih berproses.</span>
+      </div>
+      <div class="citation-box">
+        <span class="text-white/20 font-bold mr-2">12.</span>
+        <span class="text-white/70 font-bold">ELSAM &amp; Perhimpunan Guru Indonesia</span>
+        <span class="text-white/30"> — Penggugat uji materi ke MK.</span>
+      </div>
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-white/[0.06]">
+      <p class="text-[10px] text-white/[0.15] leading-relaxed">
+        Seluruh angka dan klaim dalam halaman ini merujuk pada sumber-sumber di atas. Sebagian angka merupakan estimasi berdasarkan data publik yang tersedia pada pertengahan 2026. Anggaran MBG bersifat dinamis dan dapat berubah sewaktu-waktu mengikuti kebijakan pemerintah.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============================== -->
+<!-- SCRIPTS                        -->
+<!-- ============================== -->
+<script>
+(() => {
+  const PER_DETIK = 855_000_000_000 / 86400;
+  const HARGA_RKB = 150_000_000;
+  const startTime = performance.now();
+  const el = document.getElementById('liveCounter');
+  const fill = document.getElementById('burnFill');
+  const elTime = document.getElementById('elapsedTime');
+  const rkbCount = document.getElementById('rkbCount');
+  let rafId = null;
+  let lastUpdate = 0;
+
+  const formatRupiah = (num) => {
+    const parts = Math.round(num).toString().split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return 'Rp\u00a0' + parts.join(',');
+  };
+
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = Math.floor(sec % 60);
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  };
+
+  const tick = (now) => {
+    if (now - lastUpdate >= 100) {
+      const elapsed = (now - startTime) / 1000;
+      const value = elapsed * PER_DETIK;
+      el.textContent = formatRupiah(value);
+      const pct = Math.min((elapsed / 28800) * 100, 100);
+      fill.style.width = pct + '%';
+      const dailyPct = Math.min((value / 855_000_000_000) * 100, 100);
+      const g = Math.round(255 - (dailyPct / 100) * 220);
+      const b = Math.round(255 - (dailyPct / 100) * 240);
+      fill.style.background = 'rgb(255,' + g + ',' + b + ')';
+      el.classList.toggle('text-accent', dailyPct > 50);
+      elTime.textContent = formatTime(elapsed);
+      rkbCount.textContent = Math.floor(value / HARGA_RKB);
+      lastUpdate = now;
+    }
+    rafId = requestAnimationFrame(tick);
+  };
+  rafId = requestAnimationFrame(tick);
+  window.addEventListener('beforeunload', () => { if (rafId) cancelAnimationFrame(rafId); });
+})();
+
+// --- Count-Up + Timeline Animation via IntersectionObserver ---
+(() => {
+  const animateCountUp = (el) => {
+    const target = parseFloat(el.dataset.value);
+    const prefix = el.dataset.prefix || '';
+    const suffix = el.dataset.suffix || '';
+    const decimals = parseInt(el.dataset.decimals) || 0;
+    const duration = 2000;
+    const startTime = performance.now();
+
+    const step = (now) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+      el.textContent = prefix + current.toFixed(decimals).replace('.', ',') + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+
+      if (el.classList.contains('count-up')) {
+        animateCountUp(el);
+      }
+
+      if (el.classList.contains('timeline-bar')) {
+        el.style.width = el.dataset.pct + '%';
+      }
+
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.count-up, .timeline-bar').forEach((el) => observer.observe(el));
+})();
+</script>
+
+</body>
+</html>

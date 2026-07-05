@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - LETS CALCULATE MBG!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: '#f87171', 'accent-hover': '#ef4444' }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; }
+    .tabular { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+
+  <script src="navbar.js"></script>
+
+  <main class="flex-1 max-w-[720px] mx-auto w-full px-4 sm:px-6 pt-24 sm:pt-28 pb-10">
+
+    <h1 class="font-black text-center tracking-tight mb-2" style="font-size:clamp(1.5rem,5vw,2.5rem)">Lets Calculate <span class="text-accent">MBG!</span></h1>
+    <p class="text-center text-[13px] text-white/35 mb-12 leading-relaxed">Website Informasi Makan Bergizi Gratis &mdash; program prioritas nasional.</p>
+
+    <div class="space-y-10">
+
+      <div>
+        <h2 class="text-sm font-extrabold tracking-wider uppercase text-white/40 mb-3">Apa itu Lets Calculate MBG?</h2>
+        <p class="text-[13px] text-white/50 leading-relaxed">
+          <strong class="text-white/70 font-bold">Lets Calculate MBG!</strong> adalah sebuah website yang saya buat menggunakan sistem kejar semalam, di bantu oleh open code demi keperluan tugas ahir pendidikan pancasila.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-sm font-extrabold tracking-wider uppercase text-white/40 mb-3">Tujuan Website</h2>
+        <p class="text-[13px] text-white/50 leading-relaxed">
+          Website ini dibuat untuk memberikan perspektif tentang seberapa besar anggaran harian MBG
+          (<strong class="tabular text-white/70 font-bold">Rp&nbsp;855.000.000.000</strong>) jika dibandingkan dengan harga barang dan program lain.
+          Bukan untuk meremehkan, melainkan untuk membantu masyarakat memahami skala pendanaan
+          program ini secara lebih konkret.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-sm font-extrabold tracking-wider uppercase text-white/40 mb-3">Three Tools</h2>
+        <div class="space-y-4">
+          <div class="border border-white/[0.08] p-4 bg-white/[0.02]">
+            <div class="text-sm font-extrabold text-white">Live Burn Rate</div>
+            <p class="text-[12px] text-white/40 mt-1 leading-relaxed">Menampilkan akumulasi anggaran yang terpakai secara real-time sejak halaman dibuka, dengan laju <strong class="tabular text-white/60">Rp&nbsp;9.895.833/detik</strong>.</p>
+          </div>
+          <div class="border border-white/[0.08] p-4 bg-white/[0.02]">
+            <div class="text-sm font-extrabold text-white">Calculator</div>
+            <p class="text-[12px] text-white/40 mt-1 leading-relaxed">Hitung berapa lama anggaran harian MBG mampu membiayai suatu barang berdasarkan harganya.</p>
+          </div>
+          <div class="border border-white/[0.08] p-4 bg-white/[0.02]">
+            <div class="text-sm font-extrabold text-white">Spend MBG</div>
+            <p class="text-[12px] text-white/40 mt-1 leading-relaxed">Simulasikan belanja anggaran harian untuk berbagai program seperti beasiswa, infrastruktur sekolah, dan layanan publik.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-sm font-extrabold tracking-wider uppercase text-white/40 mb-3">Data &amp; Sumber</h2>
+        <p class="text-[13px] text-white/50 leading-relaxed">
+          Anggaran <strong class="tabular text-white/70 font-bold">Rp&nbsp;855&nbsp;miliar/hari</strong> adalah data realisasi resmi
+          <strong class="text-white/70 font-bold">Badan Gizi Nasional</strong> per Januari 2026.
+          Realisasi harian dapat berubah tergantung jumlah Satuan Pelayanan Pemenuhan Gizi (SPPG)
+          dan penerima manfaat yang aktif.
+          <br/> <br/>
+          Data Mode "SPEND" adalah kalkulasi sederhana tanpa banyak pemikiran, akan saya update jika ada waktu.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-sm font-extrabold tracking-wider uppercase text-white/40 mb-3">Teknis</h2>
+        <p class="text-[13px] text-white/50 leading-relaxed">
+          Dibangun dengan HTML, Tailwind CSS, dan Vanilla JavaScript.
+          Tanpa backend, tanpa dependency berat. Semua kalkulasi berjalan di sisi klien.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <footer class="text-center px-6 pb-7 text-[10px] text-white/[0.12] tracking-wide leading-relaxed max-w-[600px] mx-auto">
+    Data didasarkan pada laju pengeluaran program <strong class="text-white/[0.25] font-bold">MBG</strong> sebesar <strong class="text-white/[0.25] font-bold">Rp&nbsp;855&nbsp;Miliar/hari</strong>. Estimasi berdasarkan realisasi anggaran harian.
+  </footer>
+
+</body>
+</html>

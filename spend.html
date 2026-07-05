@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LETS CALCULATE MBG!</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: '#f87171', 'accent-hover': '#ef4444' }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    .item-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); padding: 16px; display: flex; flex-direction: column; transition: border-color 0.15s; }
+    .item-card:hover { border-color: rgba(255,255,255,0.15); }
+    .item-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+    .item-head .emoji { font-size: 24px; flex-shrink: 0; line-height: 1; }
+    .item-head .name { font-size: 13px; font-weight: 800; color: #fff; }
+    .item-head .desc { font-size: 11px; color: rgba(255,255,255,0.25); margin-top: 2px; line-height: 1.4; }
+    .item-head .price { font-size: 11px; font-weight: 700; color: #f87171; margin-top: 3px; }
+    .item-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); }
+    .item-footer .total { font-size: 11px; color: rgba(255,255,255,0.2); }
+    .item-controls { display: flex; align-items: center; gap: 4px; }
+    .item-controls button { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.12); background: transparent; font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700; color: #fff; cursor: pointer; transition: 0.15s; line-height: 1; }
+    .item-controls button:hover { border-color: #f87171; color: #f87171; }
+    .item-controls button:disabled { opacity: 0.15; cursor: default; }
+    .item-controls button:disabled:hover { border-color: rgba(255,255,255,0.12); color: #fff; }
+    .item-controls .qty { width: 48px; height: 30px; text-align: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; color: #fff; outline: none; transition: 0.15s; }
+    .item-controls .qty:focus { border-color: #f87171; }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
+
+  <script src="navbar.js"></script>
+
+  <main class="flex-1 max-w-[900px] mx-auto w-full px-4 sm:px-6 pt-20 sm:pt-24 pb-10">
+
+    <h1 class="font-black text-center tracking-tight" style="font-size:clamp(1.5rem,5vw,2.5rem)">Spend <span class="text-accent">MBG</span></h1>
+    <p class="text-center text-[13px] text-white/35 mb-9 leading-relaxed">Belanjakan <strong class="text-white/60 font-bold">Rp&nbsp;855&nbsp;miliar</strong> anggaran harian Makan Bergizi Gratis.</p>
+
+    <!-- Budget meter -->
+    <div class="border border-white/[0.08] p-5 sm:p-7 bg-white/[0.02] mb-9">
+      <div class="flex flex-wrap justify-between items-end gap-3 mb-4">
+        <div>
+          <div class="text-[10px] font-bold tracking-wider uppercase text-white/20">Anggaran Tersisa</div>
+          <div id="remainingDisplay" class="tabular font-black text-white leading-tight" style="font-size:clamp(1.3rem,4vw,2rem)">Rp&nbsp;855.000.000.000</div>
+        </div>
+        <div id="spentDisplay" class="text-lg sm:text-xl font-extrabold text-accent tabular">Rp&nbsp;0</div>
+      </div>
+      <div class="w-full h-1 bg-white/[0.06]">
+        <div id="progressBar" class="h-full bg-accent transition-all duration-300" style="width:0%"></div>
+      </div>
+      <div class="flex items-center justify-between mt-5">
+        <button id="resetBtn" class="bg-none border-0 font-bold text-[10px] tracking-wider uppercase text-white/20 cursor-pointer transition hover:text-accent font-['Inter']">&olarr; Reset</button>
+        <div class="text-[10px] text-white/20"><strong id="itemsBought" class="text-white/40 font-bold">0</strong> item dibeli</div>
+        <button id="shareBtn" class="inline-flex items-center gap-1.5 bg-none border border-white/[0.12] px-3.5 py-1.5 text-[10px] font-bold tracking-wider uppercase text-white/30 cursor-pointer transition hover:border-white/30 hover:text-white font-['Inter']">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+          Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Items grid -->
+    <div id="itemsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[2px]"></div>
+
+  </main>
+
+  <!-- Modal -->
+  <div id="receiptModal" class="fixed inset-0 z-100 bg-black/70 items-center justify-center p-4" style="display:none">
+    <div class="bg-[#111] border border-white/[0.1] max-w-[440px] w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-5 py-4 border-b border-white/[0.06]">
+        <h3 class="text-xs font-bold tracking-wider uppercase text-white/50">Receipt</h3>
+        <div class="flex gap-2 items-center">
+          <button id="downloadReceiptBtn" class="bg-none border border-white/[0.12] px-3.5 py-1 text-[10px] font-bold tracking-wider uppercase text-white/40 cursor-pointer transition hover:border-accent hover:text-accent font-['Inter']">Download</button>
+          <button id="closeModalBtn" class="text-white/20 hover:text-white text-xl bg-none border-0 cursor-pointer leading-none p-1">&times;</button>
+        </div>
+      </div>
+      <div class="p-5 flex justify-center">
+        <canvas id="receiptCanvas" style="max-width:100%;height:auto;border:1px solid rgba(255,255,255,0.06)"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center px-6 pb-7 text-[10px] text-white/[0.12] tracking-wide leading-relaxed max-w-[600px] mx-auto">
+    Data didasarkan pada laju pengeluaran program <strong class="text-white/[0.25] font-bold">MBG</strong> sebesar <strong class="text-white/[0.25] font-bold">Rp&nbsp;855&nbsp;Miliar/hari</strong>. Estimasi berdasarkan realisasi anggaran harian.
+  </footer>
+
+  <script src="spend.js"></script>
+</body>
+</html>
