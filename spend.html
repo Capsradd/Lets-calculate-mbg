@@ -37,6 +37,7 @@
     .item-controls button:disabled:hover { border-color: rgba(255,255,255,0.12); color: #fff; }
     .item-controls .qty { width: 48px; height: 30px; text-align: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; color: #fff; outline: none; transition: 0.15s; }
     .item-controls .qty:focus { border-color: #f87171; }
+    #progressBar.safe { background: #34d399 !important; }
   </style>
 </head>
 <body class="bg-[#0a0a0a] text-white min-h-screen flex flex-col">
@@ -57,8 +58,8 @@
         </div>
         <div id="spentDisplay" class="text-lg sm:text-xl font-extrabold text-accent tabular">Rp&nbsp;0</div>
       </div>
-      <div class="w-full h-1 bg-white/[0.06]">
-        <div id="progressBar" class="h-full bg-accent transition-all duration-300" style="width:0%"></div>
+      <div style="width:100%;height:8px;background:rgba(255,255,255,0.06)">
+        <div id="progressBar" style="width:0%;background:#f87171;height:100%;transition:all 300ms"></div>
       </div>
       <div class="flex items-center justify-between mt-5">
         <button id="resetBtn" class="bg-none border-0 font-bold text-[10px] tracking-wider uppercase text-white/20 cursor-pointer transition hover:text-accent font-['Inter']">&olarr; Reset</button>

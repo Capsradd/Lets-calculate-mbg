@@ -51,15 +51,17 @@ function updateUI() {
 
   if (remaining >= 0) {
     remainingDisplay.textContent = formatRupiah(remaining);
-    remainingDisplay.className = 'remaining tabular';
+    remainingDisplay.className = 'tabular font-black leading-tight';
+    remainingDisplay.style.color = '#fff';
   } else {
-    remainingDisplay.textContent = '-' + formatRupiah(Math.abs(remaining));
-    remainingDisplay.className = 'remaining tabular over';
+    remainingDisplay.textContent = 'Melebihi anggaran harian';
+    remainingDisplay.className = 'tabular font-black leading-tight';
+    remainingDisplay.style.color = '#f87171';
   }
 
   spentDisplay.textContent = formatRupiah(spent);
   progressBar.style.width = pct + '%';
-  progressBar.className = 'meter-bar-fill' + (pct > 30 ? '' : ' safe');
+  progressBar.classList.toggle('safe', pct <= 30);
   itemsBought.textContent = formatNum(totalItems);
 
   for (const item of items) {
